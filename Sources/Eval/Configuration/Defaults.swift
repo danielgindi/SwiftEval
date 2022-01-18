@@ -32,7 +32,7 @@ struct Defaults {
     public static let defaultPrefixOperators: Set<String> = ["!"]
     public static let defaultSuffixOperators: Set<String> = ["!"]
     public static let defaultRightAssociativeOps: Set<String> = ["**"]
-    public static let defaultGenericConstants: [String: Any] = [
+    public static let defaultGenericConstants: [String: Any?] = [
         "PI": Double.pi,
         "PI_2": Double.pi / 2.0,
         "LOG2E": Darwin.M_LOG2E,
@@ -49,7 +49,7 @@ struct Defaults {
         autoParseNumericStringsLocale: Locale? = nil
     ) -> [String: EvalConfiguration.EvalFunctionBlock]
     {
-        var argFilter: (_ arg: Any) -> Any
+        var argFilter: (_ arg: Any?) -> Any?
         
         if autoParseNumericStrings {
             argFilter = {

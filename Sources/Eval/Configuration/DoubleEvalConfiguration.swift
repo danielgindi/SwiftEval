@@ -10,7 +10,7 @@ import Foundation
 open class DoubleEvalConfiguration: EvalConfiguration {
     private static let BASE_NUMBER_LOCALE = Locale(identifier: "en")
     
-    private func filterArg(_ arg: Any) -> Any {
+    private func filterArg(_ arg: Any?) -> Any? {
         if autoParseNumericStrings {
             return StringConversion.optionallyConvertStringToNumber(
                 val: arg,
@@ -27,16 +27,16 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         return formatter
     }()
     
-    open override func add(a: Any, b: Any) throws -> Any {
+    open override func add(a: Any?, b: Any?) throws -> Any? {
         if a is String {
             // do not convert them to numbers by mistake.
             // multiplication could be used to cast to numbers.
             var str = a as! String
             if let d = b as? Double {
                 let num = NSNumber(value: d)
-                str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(b)")
+                str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
             } else {
-                str = str + "\(b)"
+                str = str + (b == nil ? "\(b!)" : "")
             }
             return str
         }
@@ -46,31 +46,31 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         return a + b
     }
     
-    open override func subtract(a: Any, b: Any) throws -> Any {
+    open override func subtract(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         return a - b
     }
     
-    open override func multiply(a: Any, b: Any) throws -> Any {
+    open override func multiply(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         return a * b
     }
     
-    open override func divide(a: Any, b: Any) throws -> Any {
+    open override func divide(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         return a / b
     }
     
-    open override func pow(a: Any, b: Any) throws -> Any {
+    open override func pow(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         return Foundation.pow(a, b)
     }
     
-    open func factorial(n: Any) throws -> Any {
+    open func factorial(n: Any?) throws -> Any? {
         guard let n = filterArg(n) as? Double else { throw EvalError.invalidOperation }
         
         var s = 1
@@ -82,22 +82,15 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         return s
     }
     
-    open override func mod(a: Any, b: Any) throws -> Any {
+    open override func mod(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         return a.truncatingRemainder(dividingBy: b)
     }
     
-    open override func compare(a: Any, b: Any) -> ComparisonResult? {
-        var aNil = false
-        var bNil = false
-        
-        if Optional<Any>.isNone(a) {
-            aNil = true
-        }
-        if Optional<Any>.isNone(b) {
-            bNil = true
-        }
+    open override func compare(a: Any?, b: Any?) -> ComparisonResult? {
+        let aNil = a == nil || Optional<Any>.isNone(a!)
+        let bNil = b == nil || Optional<Any>.isNone(b!)
         
         if aNil && bNil { return .orderedSame }
         if aNil { return .orderedAscending }
@@ -139,35 +132,35 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         return nil
     }
     
-    open override func bitShiftLeft(a: Any, b: Any) throws -> Any {
+    open override func bitShiftLeft(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         
         return Double((Int64(a)) << (Int(b)))
     }
     
-    open override func bitShiftRight(a: Any, b: Any) throws -> Any {
+    open override func bitShiftRight(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         
         return Double((Int64(a)) >> (Int(b)))
     }
     
-    open override func bitAnd(a: Any, b: Any) throws -> Any {
+    open override func bitAnd(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         
         return Double((Int64(a)) & (Int64(b)))
     }
     
-    open override func bitXor(a: Any, b: Any) throws -> Any {
+    open override func bitXor(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         
         return Double((Int64(a)) ^ (Int64(b)))
     }
     
-    open override func bitOr(a: Any, b: Any) throws -> Any {
+    open override func bitOr(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { throw EvalError.invalidOperation }
         

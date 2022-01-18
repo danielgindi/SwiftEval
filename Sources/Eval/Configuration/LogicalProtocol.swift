@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol LogicalProtocol {
-    func isTruthy(_ a: Any) throws -> Bool
-    func logicalNot(_ a: Any) throws -> Bool
+    func isTruthy(_ a: Any?) throws -> Bool
+    func logicalNot(_ a: Any?) throws -> Bool
 }

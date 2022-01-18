@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol ConversionProtocol {
-    func convertToNumber(_ value: Any) -> Any
+    func convertToNumber(_ value: Any?) -> Any?
 }

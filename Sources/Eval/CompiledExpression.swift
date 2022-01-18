@@ -16,11 +16,11 @@ public class CompiledExpression {
     internal var root: Token
     public var configuration: EvalConfiguration
     
-    public func execute() throws -> Any {
+    public func execute() throws -> Any? {
         return try Evaluator.execute(expression: self)
     }
     
-    public func setConstant(name: String, value: Any) {
+    public func setConstant(name: String, value: Any?) {
         configuration.setConstant(value: value, forName: name)
     }
     

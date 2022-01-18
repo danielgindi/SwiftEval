@@ -78,11 +78,11 @@ public class Evaluator {
         return CompiledExpression(root: tree, configuration: configuration)
     }
     
-    public class func execute(expression: String, configuration: EvalConfiguration) throws -> Any {
+    public class func execute(expression: String, configuration: EvalConfiguration) throws -> Any? {
         return try execute(expression: compile(expression: expression, configuration: configuration))
     }
     
-    public class func execute(expression: CompiledExpression) throws -> Any {
+    public class func execute(expression: CompiledExpression) throws -> Any? {
         return try evaluateToken(
             token: expression.root,
             configuration: expression.configuration)
@@ -577,21 +577,21 @@ public class Evaluator {
         return singleToken
     }
     
-    internal class func evaluateToken(token: Token, configuration: EvalConfiguration) throws -> Any {
+    internal class func evaluateToken(token: Token, configuration: EvalConfiguration) throws -> Any? {
         let value = token.value
         
         switch token.type {
         case .string:
-            return value as Any
+            return value
             
         case .number:
-            if value == nil { return Optional<Any>.none as Any }
+            if value == nil { return nil }
             
             return configuration.convertToNumber(value!)
             
         case .var:
             
-            if value == nil { return Optional<Any>.none as Any }
+            if value == nil { return nil }
             
             if let provider = configuration.constProvider,
                let val = try provider(value!),
@@ -600,24 +600,32 @@ public class Evaluator {
             }
             
             if let constants = configuration.constants {
-                if let val = constants[value!], !Optional<Any>.isNone(val) {
+                if let val = constants[value!],
+                   val != nil,
+                   !Optional<Any>.isNone(val!) {
                     return val
                 }
                 
-                if let val = constants[value!.uppercased()], !Optional<Any>.isNone(val) {
+                if let val = constants[value!.uppercased()],
+                   val != nil,
+                   !Optional<Any>.isNone(val!) {
                     return val
                 }
             }
             
-            if let val = configuration.genericConstants[value!], !Optional<Any>.isNone(val) {
+            if let val = configuration.genericConstants[value!],
+               val != nil,
+               !Optional<Any>.isNone(val!) {
                 return val
             }
             
-            if let val = configuration.genericConstants[value!.uppercased()], !Optional<Any>.isNone(val) {
+            if let val = configuration.genericConstants[value!.uppercased()],
+               val != nil,
+               !Optional<Any>.isNone(val!) {
                 return val
             }
             
-            return Optional<Any>.none as Any
+            return nil
             
         case .call:
             return try evaluateFunction(token: token, configuration: configuration)
@@ -721,16 +729,15 @@ public class Evaluator {
         throw EvalError.parseError(message: "An unexpected error occurred while evaluating expression")
     }
     
-    internal class func evaluateFunction(token: Token, configuration: EvalConfiguration) throws -> Any {
+    internal class func evaluateFunction(token: Token, configuration: EvalConfiguration) throws -> Any? {
         let fname = token.value ?? ""
         
-        var args = [Any]()
+        var args = [Any?]()
         
         for arg in token.arguments?.items ?? [] {
             if arg == nil {
-                args.append(Optional<Any>.none as Any)
-            }
-            else {
+                args.append(nil)
+            } else {
                 args.append(try evaluateToken(token: arg!, configuration: configuration))
             }
         }

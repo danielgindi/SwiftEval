@@ -57,7 +57,7 @@ public class StringConversion {
         return formatter
     }()
     
-    public class func optionallyConvertStringToNumber(val: Any, locale: Locale? = nil) -> Any {
+    public class func optionallyConvertStringToNumber(val: Any?, locale: Locale? = nil) -> Any? {
         if let sval = val as? String {
             var formatter: NumberFormatter
             

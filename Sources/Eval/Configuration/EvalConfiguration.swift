@@ -12,7 +12,7 @@ open class EvalConfiguration: MathProtocol,
                               BitwiseProtocol,
                               ComparisonProtocol,
                               ConversionProtocol {
-    public typealias EvalFunctionBlock = (_ args: [Any]) throws -> Any?
+    public typealias EvalFunctionBlock = (_ args: [Any?]) throws -> Any?
     public typealias ConstProvider = (_ varname: String) throws -> Any?
     
     internal var _allOperators = [String]()
@@ -40,9 +40,9 @@ open class EvalConfiguration: MathProtocol,
     
     public var varNameChars = Set<Character>()
     
-    public var genericConstants = [String: Any]()
+    public var genericConstants = [String: Any?]()
     public var genericFunctions = [String: EvalFunctionBlock]()
-    public var constants: [String: Any]?
+    public var constants: [String: Any?]?
     public var functions: [String: EvalFunctionBlock]?
     
     public var constProvider: ConstProvider?
@@ -50,9 +50,9 @@ open class EvalConfiguration: MathProtocol,
     public var autoParseNumericStrings: Bool = true
     public var autoParseNumericStringsLocale: Locale? = nil
     
-    open func setConstant(value: Any, forName name: String) {
+    open func setConstant(value: Any?, forName name: String) {
         if constants == nil {
-            constants = [String: Any]()
+            constants = [:]
         }
         
         constants![name] = value
@@ -126,8 +126,8 @@ open class EvalConfiguration: MathProtocol,
     
     // MARK: - LogicalProtocol
     
-    public func isTruthy(_ a: Any) throws -> Bool {
-        if Optional<Any>.isNone(a) {
+    public func isTruthy(_ a: Any?) throws -> Bool {
+        if a == nil || Optional<Any>.isNone(a!) {
             return false
         }
         
@@ -158,22 +158,15 @@ open class EvalConfiguration: MathProtocol,
         return true
     }
     
-    public func logicalNot(_ a: Any) throws -> Bool {
+    public func logicalNot(_ a: Any?) throws -> Bool {
         return try !isTruthy(a)
     }
     
     // MARK: - ComparisonProtocol
     
-    public func compare(a: Any, b: Any) -> ComparisonResult? {
-        var aNil = false
-        var bNil = false
-        
-        if Optional<Any>.isNone(a) {
-            aNil = true
-        }
-        if Optional<Any>.isNone(b) {
-            bNil = true
-        }
+    public func compare(a: Any?, b: Any?) -> ComparisonResult? {
+        let aNil = a == nil || Optional<Any>.isNone(a!)
+        let bNil = b == nil || Optional<Any>.isNone(b!)
         
         if aNil && bNil { return .orderedSame }
         if aNil { return .orderedAscending }
@@ -225,39 +218,39 @@ open class EvalConfiguration: MathProtocol,
         return nil
     }
     
-    public func lessThan(a: Any, b: Any) -> Bool {
+    public func lessThan(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedAscending
     }
     
-    public func lessThanOrEqualsTo(a: Any, b: Any) -> Bool {
+    public func lessThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedAscending || res == .orderedSame
     }
     
-    public func greaterThan(a: Any, b: Any) -> Bool {
+    public func greaterThan(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedDescending
     }
     
-    public func greaterThanOrEqualsTo(a: Any, b: Any) -> Bool {
+    public func greaterThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedDescending || res == .orderedSame
     }
     
-    public func equalsTo(a: Any, b: Any) -> Bool {
+    public func equalsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedSame
     }
     
-    public func notEqualsTo(a: Any, b: Any) -> Bool {
+    public func notEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res != .orderedSame
     }
     
     // MARK: - MathProtocol
     
-    public func add(a: Any, b: Any) throws -> Any {
+    public func add(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a + b
         }
@@ -270,7 +263,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func subtract(a: Any, b: Any) throws -> Any {
+    public func subtract(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a - b
         }
@@ -283,7 +276,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func multiply(a: Any, b: Any) throws -> Any {
+    public func multiply(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a * b
         }
@@ -296,7 +289,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func divide(a: Any, b: Any) throws -> Any {
+    public func divide(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a / b
         }
@@ -309,7 +302,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func pow(a: Any, b: Any) throws -> Any {
+    public func pow(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return Foundation.pow(a, b)
         }
@@ -322,7 +315,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func factorial(_ n: Any) throws -> Any {
+    public func factorial(_ n: Any?) throws -> Any? {
         guard let n = n as? Double else { throw EvalError.notImplemented }
         
         var s = 1
@@ -334,7 +327,7 @@ open class EvalConfiguration: MathProtocol,
         return s
     }
     
-    public func mod(a: Any, b: Any) throws -> Any {
+    public func mod(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a.truncatingRemainder(dividingBy: b)
         }
@@ -350,34 +343,34 @@ open class EvalConfiguration: MathProtocol,
     
     // MARK: - BitwiseProtocol
     
-    public func bitShiftLeft(a: Any, b: Any) throws -> Any {
+    public func bitShiftLeft(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitShiftRight(a: Any, b: Any) throws -> Any {
+    public func bitShiftRight(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitAnd(a: Any, b: Any) throws -> Any {
+    public func bitAnd(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitXor(a: Any, b: Any) throws -> Any {
+    public func bitXor(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitOr(a: Any, b: Any) throws -> Any {
+    public func bitOr(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
     // MARK: - ConversionProtocol
     
-    public func convertToNumber(_ value: Any) -> Any {
+    public func convertToNumber(_ value: Any?) -> Any? {
         if value is Double {
             return value
         }
         
-        if Optional<Any>.isNone(value) {
+        if value == nil || Optional<Any>.isNone(value!) {
             return convertToNumber(0.0)
         }
         
