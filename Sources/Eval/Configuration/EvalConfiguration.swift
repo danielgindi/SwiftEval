@@ -205,10 +205,12 @@ open class EvalConfiguration: MathProtocol,
         if a is Double || b is Double {
             let a =
             (StringConversion.optionallyConvertStringToNumber(
-                val: a) as? NSNumber)?.doubleValue
+                val: a,
+                locale: autoParseNumericStringsLocale) as? NSNumber)?.doubleValue
             let b =
             (StringConversion.optionallyConvertStringToNumber(
-                val: b) as? NSNumber)?.doubleValue
+                val: b,
+                locale: autoParseNumericStringsLocale) as? NSNumber)?.doubleValue
             if a == nil { return nil }
             if b == nil { return nil }
             

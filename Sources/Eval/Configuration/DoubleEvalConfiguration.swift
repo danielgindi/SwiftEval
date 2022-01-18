@@ -8,8 +8,6 @@
 import Foundation
 
 open class DoubleEvalConfiguration: EvalConfiguration {
-    private static let BASE_NUMBER_LOCALE = Locale(identifier: "en")
-    
     private func filterArg(_ arg: Any?) -> Any? {
         if autoParseNumericStrings {
             return StringConversion.optionallyConvertStringToNumber(
@@ -42,36 +40,37 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         }
         
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.add(a: a, b: b) }
+        
         return a + b
     }
     
     open override func subtract(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.subtract(a: a, b: b) }
         return a - b
     }
     
     open override func multiply(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.multiply(a: a, b: b) }
         return a * b
     }
     
     open override func divide(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.divide(a: a, b: b) }
         return a / b
     }
     
     open override func pow(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.pow(a: a, b: b) }
         return Foundation.pow(a, b)
     }
     
     open func factorial(n: Any?) throws -> Any? {
-        guard let n = filterArg(n) as? Double else { throw EvalError.invalidOperation }
+        guard let n = filterArg(n) as? Double else { return try super.factorial(n) }
         
         var s = 1
         
@@ -84,52 +83,8 @@ open class DoubleEvalConfiguration: EvalConfiguration {
     
     open override func mod(a: Any?, b: Any?) throws -> Any? {
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
-        else { throw EvalError.invalidOperation }
+        else { return try super.mod(a: a, b: b) }
         return a.truncatingRemainder(dividingBy: b)
-    }
-    
-    open override func compare(a: Any?, b: Any?) -> ComparisonResult? {
-        let aNil = a == nil || Optional<Any>.isNone(a!)
-        let bNil = b == nil || Optional<Any>.isNone(b!)
-        
-        if aNil && bNil { return .orderedSame }
-        if aNil { return .orderedAscending }
-        if bNil { return .orderedDescending }
-        
-        if a is Double && b is Double {
-            let a = a as! Double
-            let b = b as! Double
-            return a < b ? .orderedAscending : a > b ? .orderedDescending : .orderedSame
-        }
-        
-        if a is Bool && b is Bool {
-            let a = a as! Bool
-            let b = b as! Bool
-            return !a && b ? .orderedAscending : a && !b ? .orderedDescending : .orderedSame
-        }
-        
-        if a is String && b is String {
-            let a = a as! String
-            let b = b as! String
-            return a.compare(b)
-        }
-        
-        if a is Double || b is Double {
-            let a =
-            (StringConversion.optionallyConvertStringToNumber(
-                val: a,
-                locale: autoParseNumericStringsLocale) as? NSNumber)?.doubleValue
-            let b =
-            (StringConversion.optionallyConvertStringToNumber(
-                val: b,
-                locale: autoParseNumericStringsLocale) as? NSNumber)?.doubleValue
-            if a == nil { return nil }
-            if b == nil { return nil }
-            
-            return a! < b! ? .orderedAscending : a! > b! ? .orderedDescending : .orderedSame
-        }
-        
-        return nil
     }
     
     open override func bitShiftLeft(a: Any?, b: Any?) throws -> Any? {

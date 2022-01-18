@@ -76,6 +76,16 @@ public class StringConversion {
                 return number as AnyObject
             }
             
+            if locale != nil {
+                formatter =
+                guessNumberComma(val: sval, allowThousands: true)
+                ? COMMA_BASED_FORMATTER : PERIOD_BASED_FORMATTER
+                
+                if let number = formatter.number(from: sval) {
+                    return number as AnyObject
+                }
+            }
+            
             return val
         } else {
             return val

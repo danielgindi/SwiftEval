@@ -14,7 +14,7 @@ public class Evaluator {
         var i: Int
         var end = tokens.count
         
-        // Compact +-
+        // Collapse +-
         i = 1
         while i < end {
             let token = tokens[i]
