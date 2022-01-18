@@ -204,10 +204,10 @@ open class EvalConfiguration: MathProtocol,
         
         if a is Double || b is Double {
             let a =
-            (Eval.StringConversion.optionallyConvertStringToNumber(
+            (StringConversion.optionallyConvertStringToNumber(
                 val: a) as? NSNumber)?.doubleValue
             let b =
-            (Eval.StringConversion.optionallyConvertStringToNumber(
+            (StringConversion.optionallyConvertStringToNumber(
                 val: b) as? NSNumber)?.doubleValue
             if a == nil { return nil }
             if b == nil { return nil }
