@@ -36,7 +36,7 @@ open class DoubleEvalConfiguration: EvalConfiguration {
                 let num = NSNumber(value: d)
                 str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
             } else {
-                str = str + (b == nil ? "\(b!)" : "")
+                str = str + (b == nil ? "" : "\(b!)")
             }
             return str
         }
