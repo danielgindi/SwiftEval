@@ -107,7 +107,7 @@ open class EvalConfiguration: MathProtocol,
         }
     }
     
-    public func clone() -> Self {
+    open func clone() -> Self {
         let config = Self(populateDefaults: false,
                           autoParseNumericStrings: autoParseNumericStrings,
                           autoParseNumericStringsLocale: autoParseNumericStringsLocale)
@@ -126,7 +126,7 @@ open class EvalConfiguration: MathProtocol,
     
     // MARK: - LogicalProtocol
     
-    public func isTruthy(_ a: Any?) throws -> Bool {
+    open func isTruthy(_ a: Any?) throws -> Bool {
         if a == nil || Optional<Any>.isNone(a!) {
             return false
         }
@@ -158,13 +158,13 @@ open class EvalConfiguration: MathProtocol,
         return true
     }
     
-    public func logicalNot(_ a: Any?) throws -> Bool {
+    open func logicalNot(_ a: Any?) throws -> Bool {
         return try !isTruthy(a)
     }
     
     // MARK: - ComparisonProtocol
     
-    public func compare(a: Any?, b: Any?) -> ComparisonResult? {
+    open func compare(a: Any?, b: Any?) -> ComparisonResult? {
         let aNil = a == nil || Optional<Any>.isNone(a!)
         let bNil = b == nil || Optional<Any>.isNone(b!)
         
@@ -218,39 +218,39 @@ open class EvalConfiguration: MathProtocol,
         return nil
     }
     
-    public func lessThan(a: Any?, b: Any?) -> Bool {
+    open func lessThan(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedAscending
     }
     
-    public func lessThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
+    open func lessThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedAscending || res == .orderedSame
     }
     
-    public func greaterThan(a: Any?, b: Any?) -> Bool {
+    open func greaterThan(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedDescending
     }
     
-    public func greaterThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
+    open func greaterThanOrEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedDescending || res == .orderedSame
     }
     
-    public func equalsTo(a: Any?, b: Any?) -> Bool {
+    open func equalsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res == .orderedSame
     }
     
-    public func notEqualsTo(a: Any?, b: Any?) -> Bool {
+    open func notEqualsTo(a: Any?, b: Any?) -> Bool {
         guard let res = compare(a: a, b: b) else { return false }
         return res != .orderedSame
     }
     
     // MARK: - MathProtocol
     
-    public func add(a: Any?, b: Any?) throws -> Any? {
+    open func add(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a + b
         }
@@ -263,7 +263,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func subtract(a: Any?, b: Any?) throws -> Any? {
+    open func subtract(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a - b
         }
@@ -276,7 +276,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func multiply(a: Any?, b: Any?) throws -> Any? {
+    open func multiply(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a * b
         }
@@ -289,7 +289,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func divide(a: Any?, b: Any?) throws -> Any? {
+    open func divide(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a / b
         }
@@ -302,7 +302,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func pow(a: Any?, b: Any?) throws -> Any? {
+    open func pow(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return Foundation.pow(a, b)
         }
@@ -315,7 +315,7 @@ open class EvalConfiguration: MathProtocol,
         throw EvalError.notImplemented
     }
     
-    public func factorial(_ n: Any?) throws -> Any? {
+    open func factorial(_ n: Any?) throws -> Any? {
         guard let n = n as? Double else { throw EvalError.notImplemented }
         
         var s = 1
@@ -327,7 +327,7 @@ open class EvalConfiguration: MathProtocol,
         return s
     }
     
-    public func mod(a: Any?, b: Any?) throws -> Any? {
+    open func mod(a: Any?, b: Any?) throws -> Any? {
         if let a = a as? Double, let b = b as? Double {
             return a.truncatingRemainder(dividingBy: b)
         }
@@ -343,29 +343,29 @@ open class EvalConfiguration: MathProtocol,
     
     // MARK: - BitwiseProtocol
     
-    public func bitShiftLeft(a: Any?, b: Any?) throws -> Any? {
+    open func bitShiftLeft(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitShiftRight(a: Any?, b: Any?) throws -> Any? {
+    open func bitShiftRight(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitAnd(a: Any?, b: Any?) throws -> Any? {
+    open func bitAnd(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitXor(a: Any?, b: Any?) throws -> Any? {
+    open func bitXor(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
-    public func bitOr(a: Any?, b: Any?) throws -> Any? {
+    open func bitOr(a: Any?, b: Any?) throws -> Any? {
         throw EvalError.notImplemented
     }
     
     // MARK: - ConversionProtocol
     
-    public func convertToNumber(_ value: Any?) -> Any? {
+    open func convertToNumber(_ value: Any?) -> Any? {
         if value is Double {
             return value
         }
