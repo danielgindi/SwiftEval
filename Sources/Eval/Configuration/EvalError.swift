@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EvalError: Error {
+public enum EvalError: Error {
     case invalidOperation
     case notImplemented
     case parseError(message: String)
