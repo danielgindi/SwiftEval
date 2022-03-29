@@ -32,6 +32,10 @@ final class BasicTests: XCTestCase {
         
         testExpr("345 / pow(5,12/9) * 124 / 41 * 12", value: 345.0 / pow(5.0, 12.0 / 9.0) * 124.0 / 41.0 * 12.0, config: config)
         
+        testExpr("2*5!+3",
+                 value: 243,
+                 config: config)
+                 
         testExpr("-5&&2==7&&-4>=-5>>-8*-5", value: (-5 != 0 && 2 == 7 && -4 >= -5 >> -8 * -5), config: config)
         
         testExpr("\"testing\" == \"testing\"", value: true, config: config)
