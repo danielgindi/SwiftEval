@@ -44,7 +44,7 @@ public class Evaluator {
                 prevToken.type == .op &&
                 (prevToken.value == "-" || prevToken.value == "+") &&
                 ((i > 1 && tokens[i - 2].type == .op &&
-                !configuration.suffixOperators.contains(tokens[i - 2].value)) || i == 1) {
+                !configuration.suffixOperators.contains(tokens[i - 2].value ?? "")) || i == 1) {
                 if prevToken.value == "-" {
                     token.value = prevToken.value! + token.value!
                 }
