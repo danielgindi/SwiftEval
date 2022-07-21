@@ -8,7 +8,7 @@
 import Foundation
 
 public class StringConversion {
-    public class func guessNumberComma(val: String, allowThousands: Bool) -> Bool {
+    public class func guessNumberComma(val: String) -> Bool {
         let sval = val.trimmingCharacters(in: .whitespacesAndNewlines)
         let p1 = val.firstIndex(of: ".")
         let p2 = p1 == nil ? nil : val.lastIndex(of: ".")
@@ -17,7 +17,7 @@ public class StringConversion {
         let hasSign = val.count > 0 && (sval.hasPrefix("-") || sval.hasPrefix("+"))
         let lenNoSign = hasSign ? val.count - 1 : val.count
         
-        var isCommaBased: Bool
+        var isCommaBased: Bool = false
         
         if c1 != nil && p1 != nil {  // who's last?
             isCommaBased = c2! > p2!
@@ -33,9 +33,6 @@ public class StringConversion {
             isCommaBased = true
         } else if p1 != nil && p2! != sval.index(sval.endIndex, offsetBy: -4) {  // period not in thousands position
             isCommaBased = false
-        } else {
-            // if there's a period in the thousands position -> guess that the number is comma based with thousands group
-            isCommaBased = allowThousands && p1 != nil
         }
         
         return isCommaBased
@@ -68,7 +65,7 @@ public class StringConversion {
                 formatter.usesGroupingSeparator = true
             } else {
                 formatter =
-                guessNumberComma(val: sval, allowThousands: true)
+                guessNumberComma(val: sval)
                 ? COMMA_BASED_FORMATTER : PERIOD_BASED_FORMATTER
             }
             
@@ -78,7 +75,7 @@ public class StringConversion {
             
             if locale != nil {
                 formatter =
-                guessNumberComma(val: sval, allowThousands: true)
+                guessNumberComma(val: sval)
                 ? COMMA_BASED_FORMATTER : PERIOD_BASED_FORMATTER
                 
                 if let number = formatter.number(from: sval) {
