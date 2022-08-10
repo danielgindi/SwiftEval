@@ -744,30 +744,16 @@ public class Evaluator {
             }
         }
         
-        if let functions = configuration.functions {
-            if let fn = functions[fname],
-               let val = try fn(args),
+        if let fn = configuration.functions?[fname] ??
+            configuration.functions?[fname.uppercased()] ??
+            configuration.genericFunctions[fname] ??
+            configuration.genericFunctions[fname.uppercased()]
+        {
+            if let val = try fn(args),
                !Optional<Any>.isNone(val) {
                 return val
             }
-            
-            if let fn = functions[fname.uppercased()],
-               let val = try fn(args),
-               !Optional<Any>.isNone(val) {
-                return val
-            }
-        }
-        
-        if let fn = configuration.genericFunctions[fname],
-           let val = try fn(args),
-           !Optional<Any>.isNone(val) {
-            return val
-        }
-        
-        if let fn = configuration.genericFunctions[fname.uppercased()],
-           let val = try fn(args),
-           !Optional<Any>.isNone(val) {
-            return val
+            return nil
         }
         
         throw EvalError.parseError(message: "Function named \"\(fname)\" was not found")
