@@ -744,10 +744,24 @@ public class Evaluator {
             }
         }
         
-        if let fn = configuration.functions?[fname] ??
-            configuration.functions?[fname.uppercased()] ??
-            configuration.genericFunctions[fname] ??
-            configuration.genericFunctions[fname.uppercased()]
+        var fn = configuration.functions?[fname]
+        
+        if fn == nil
+        {
+            fn = configuration.functions?[fname.uppercased()]
+        }
+        
+        if fn == nil
+        {
+            fn = configuration.genericFunctions[fname]
+        }
+        
+        if fn == nil
+        {
+            fn = configuration.genericFunctions[fname.uppercased()]
+        }
+        
+        if let fn = fn
         {
             if let val = try fn(args),
                !Optional<Any>.isNone(val) {
