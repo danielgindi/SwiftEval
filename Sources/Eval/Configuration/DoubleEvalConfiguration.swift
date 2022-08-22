@@ -26,29 +26,29 @@ open class DoubleEvalConfiguration: EvalConfiguration {
     }()
     
     open override func add(a: Any?, b: Any?) throws -> Any? {
-        if a is String {
+        if let a = a as? String {
             // do not convert them to numbers by mistake.
             // multiplication could be used to cast to numbers.
-            var str = a as! String
+            var str: String
             if let d = b as? Double {
                 let num = NSNumber(value: d)
-                str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
+                str = (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
             } else {
-                str = str + (b == nil ? "" : "\(b!)")
+                str = (b == nil ? "" : "\(b!)")
             }
-            return str
+            return a + str
         }
-        else if b is String {
+        else if let b = b as? String {
             // do not convert them to numbers by mistake.
             // multiplication could be used to cast to numbers.
-            var str = b as! String
+            var str: String
             if let d = a as? Double {
                 let num = NSNumber(value: d)
-                str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
+                str = (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
             } else {
-                str = str + (a == nil ? "" : "\(a!)")
+                str = (a == nil ? "" : "\(a!)")
             }
-            return str
+            return str + b
         }
         
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
