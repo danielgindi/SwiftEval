@@ -38,6 +38,18 @@ open class DoubleEvalConfiguration: EvalConfiguration {
             }
             return str
         }
+        else if b is String {
+            // do not convert them to numbers by mistake.
+            // multiplication could be used to cast to numbers.
+            var str = b as! String
+            if let d = a as? Double {
+                let num = NSNumber(value: d)
+                str = str + (stringifyDoubleFormatter.string(from: num) ?? "\(num)")
+            } else {
+                str = str + (a == nil ? "" : "\(a!)")
+            }
+            return str
+        }
         
         guard let a = filterArg(a) as? Double, let b = filterArg(b) as? Double
         else { return try super.add(a: a, b: b) }
