@@ -44,7 +44,12 @@ open class EvalConfiguration: MathProtocol,
     public var genericFunctions = [String: EvalFunctionBlock]()
     public var constants: [String: Any?]?
     public var functions: [String: EvalFunctionBlock]?
-    
+
+    /**
+     * A provider for constants that are not defined in the configuration.
+     * This is useful for providing constants that are not known at compile time.
+     * Return <code>Evaluator.ConstProviderDefault</code> to fall back to the default behavior.
+     */
     public var constProvider: ConstProvider?
     
     public var autoParseNumericStrings: Bool = true
@@ -318,15 +323,48 @@ open class EvalConfiguration: MathProtocol,
     }
     
     open func factorial(_ n: Any?) throws -> Any? {
-        guard let n = n as? Double else { throw EvalError.notImplemented }
-        
-        var s = 1
-        
-        for i in 2...(Int(n)) {
-            s = s * i
+        if let n = n as? Double
+        {
+            var s = 1
+            
+            for i in 2...(Int(n)) {
+                s = s * i
+            }
+            
+            return s
+        }
+        else if let n = n as? Float
+        {
+            var s = 1
+            
+            for i in 2...(Int(n)) {
+                s = s * i
+            }
+            
+            return s
+        }
+        else if let n = n as? Decimal
+        {
+            var s = 1
+            
+            for i in 2...(Int(NSDecimalNumber(decimal: n).doubleValue)) {
+                s = s * i
+            }
+            
+            return s
+        }
+        else if let n = n as? Int
+        {
+            var s = 1
+            
+            for i in 2...n {
+                s = s * i
+            }
+            
+            return s
         }
         
-        return s
+        throw EvalError.notImplemented
     }
     
     open func mod(a: Any?, b: Any?) throws -> Any? {

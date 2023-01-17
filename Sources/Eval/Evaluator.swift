@@ -8,6 +8,8 @@
 import Foundation
 
 public class Evaluator {
+    public static let ConstProviderDefault: AnyObject = ConstProviderDefaultFallback()
+
     public class func compile(expression: String, configuration: EvalConfiguration) throws -> CompiledExpression {
         var tokens = try tokenizeExpression(expression: expression, configuration: configuration)
         
@@ -595,35 +597,28 @@ public class Evaluator {
             
             if value == nil { return nil }
             
-            if let provider = configuration.constProvider,
-               let val = try provider(value!),
-               !Optional<Any>.isNone(val) {
-                return val
+            if let provider = configuration.constProvider {
+                let val = try provider(value!)
+                if val as AnyObject !== ConstProviderDefault {
+                    return val
+                }
             }
             
             if let constants = configuration.constants {
-                if let val = constants[value!],
-                   val != nil,
-                   !Optional<Any>.isNone(val!) {
+                if let val = constants[value!] {
                     return val
                 }
                 
-                if let val = constants[value!.uppercased()],
-                   val != nil,
-                   !Optional<Any>.isNone(val!) {
+                if let val = constants[value!.uppercased()] {
                     return val
                 }
             }
             
-            if let val = configuration.genericConstants[value!],
-               val != nil,
-               !Optional<Any>.isNone(val!) {
+            if let val = configuration.genericConstants[value!] {
                 return val
             }
             
-            if let val = configuration.genericConstants[value!.uppercased()],
-               val != nil,
-               !Optional<Any>.isNone(val!) {
+            if let val = configuration.genericConstants[value!.uppercased()] {
                 return val
             }
             
@@ -772,4 +767,6 @@ public class Evaluator {
         
         throw EvalError.parseError(message: "Function named \"\(fname)\" was not found")
     }
+    
+    private class ConstProviderDefaultFallback {}
 }

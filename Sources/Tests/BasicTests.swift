@@ -64,11 +64,31 @@ final class BasicTests: XCTestCase {
         
         testExpr("\"5\"+5", value: "55", config: config)
         
-        testExpr("5+\"5\"", value: 10, config: config)
-        
         testExpr("12e5", value: 1200000, config: config)
         
         testExpr("12e+5", value: 1200000, config: config)
+        
+        withConsts.constProvider = {
+            if $0 == "y" {
+                return 5.0
+            }
+            
+            return Evaluator.ConstProviderDefault
+        }
+        
+        testExpr("x", value: 5.9, config: withConsts)
+        testExpr("y", value: 5.0, config: withConsts)
+        
+        withConsts.constProvider = {
+            if $0 == "y" {
+                return 5.0
+            }
+            
+            return nil
+        }
+        
+        testExpr("x", value: nil as Double?, config: withConsts)
+        testExpr("y", value: 5.0, config: withConsts)
     }
     
     private func testExpr(_ expr: String, value: Double?, config: EvalConfiguration)

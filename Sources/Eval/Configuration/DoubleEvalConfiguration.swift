@@ -81,7 +81,7 @@ open class DoubleEvalConfiguration: EvalConfiguration {
         return Foundation.pow(a, b)
     }
     
-    open func factorial(n: Any?) throws -> Any? {
+    open override func factorial(_ n: Any?) throws -> Any? {
         guard let n = filterArg(n) as? Double else { return try super.factorial(n) }
         
         var s = 1
@@ -90,7 +90,7 @@ open class DoubleEvalConfiguration: EvalConfiguration {
             s = s * i
         }
         
-        return s
+        return Double(s)
     }
     
     open override func mod(a: Any?, b: Any?) throws -> Any? {
