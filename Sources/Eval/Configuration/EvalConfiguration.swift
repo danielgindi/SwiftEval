@@ -267,6 +267,15 @@ open class EvalConfiguration: MathProtocol,
         if let a = a as? Decimal, let b = b as? Decimal {
             return a + b
         }
+        if let a = (a ?? b) as? Double, (isNilAny(a) || isNilAny(b)) {
+            return a + 0.0
+        }
+        if let a = (a ?? b) as? Float, (isNilAny(a) || isNilAny(b)) {
+            return a + 0.0
+        }
+        if let a = (a ?? b) as? Decimal, (isNilAny(a) || isNilAny(b)) {
+            return a + 0.0
+        }
         throw EvalError.notImplemented
     }
     
@@ -279,6 +288,24 @@ open class EvalConfiguration: MathProtocol,
         }
         if let a = a as? Decimal, let b = b as? Decimal {
             return a - b
+        }
+        if let a = a as? Double, isNilAny(b) {
+            return a + 0.0
+        }
+        if let b = b as? Double, isNilAny(a) {
+            return -b
+        }
+        if let a = a as? Float, isNilAny(b) {
+            return a + 0.0
+        }
+        if let b = b as? Float, isNilAny(a) {
+            return -b
+        }
+        if let a = a as? Decimal, isNilAny(b) {
+            return a + 0.0
+        }
+        if let b = b as? Decimal, isNilAny(a) {
+            return -b
         }
         throw EvalError.notImplemented
     }
@@ -423,5 +450,15 @@ open class EvalConfiguration: MathProtocol,
         return (StringConversion.optionallyConvertStringToNumber(
             val: value,
             locale: autoParseNumericStringsLocale) as? NSNumber)?.doubleValue ?? 0.0
+    }
+    
+    private func isNilAny(_ value: Any?) -> Bool {
+        if case .some(Optional<Any>.none) = value {
+            return true
+        }
+        if value == nil || value is NSNull {
+            return true
+        }
+        return false
     }
 }
