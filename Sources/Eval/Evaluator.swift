@@ -106,7 +106,12 @@ public class Evaluator {
                 continue
             }
             
-            if expression[start..<expression.index(start, offsetBy: item.count)] == item {
+            let end = expression.index(start, offsetBy: item.count)
+            if end > expression.endIndex {
+                continue
+            }
+            
+            if expression[start..<end] == item {
                 op = item
             }
         }
