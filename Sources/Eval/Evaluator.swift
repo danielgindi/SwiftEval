@@ -93,6 +93,10 @@ public class Evaluator {
     }
     
     internal class func opAtPosition(expression: String, start: String.Index, configuration: EvalConfiguration) throws -> String? {
+        if start >= expression.endIndex {
+            return nil
+        }
+        
         var op: String? = nil
         
         let allOperators = configuration._allOperators
