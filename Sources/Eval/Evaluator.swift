@@ -106,10 +106,8 @@ public class Evaluator {
                 continue
             }
             
-            let end = expression.index(start, offsetBy: item.count)
-            if end > expression.endIndex {
-                continue
-            }
+            guard let end = expression.index(start, offsetBy: item.count, limitedBy: expression.endIndex) else { continue }
+            if end > expression.endIndex { continue }
             
             if expression[start..<end] == item {
                 op = item
