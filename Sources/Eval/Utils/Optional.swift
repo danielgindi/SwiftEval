@@ -16,3 +16,23 @@ internal extension Optional {
         return false
     }
 }
+
+func unwrapOptional(_ value: Any?) -> Any? {
+    guard var current = value else {
+        return nil
+    }
+
+    while true {
+        let mirror = Mirror(reflecting: current)
+
+        guard mirror.displayStyle == .optional else {
+            return current
+        }
+
+        guard let child = mirror.children.first else {
+            return nil
+        }
+
+        current = child.value
+    }
+}
